@@ -9,7 +9,7 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.min.js"></script>
     <script>
-        document.addEventListener('livewire:navigated', () => initQuillEditor());
+        // document.addEventListener('livewire:navigated', () => initQuillEditor());
         // document.addEventListener('DOMContentLoaded', () => initQuillEditor());
 
         function initQuillEditor() {
