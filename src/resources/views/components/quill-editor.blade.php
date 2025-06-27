@@ -42,7 +42,7 @@
                 quill.root.innerHTML = e.detail?.content || '';
             });
 
-            document.addEventListener('DOMContentLoaded', initQuillEditor);
+            // document.addEventListener('DOMContentLoaded', initQuillEditor);
 
             if (window.Livewire) {
                 Livewire.hook('element.updated', (el, component) => {
