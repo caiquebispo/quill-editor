@@ -9,14 +9,14 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.min.js"></script>
     <script>
-
         document.addEventListener('livewire:navigated', () => initQuillEditor());
         document.addEventListener('DOMContentLoaded', () => initQuillEditor());
-        document.addEventListener('open-editor-modal', () => { setTimeout(() => initQuillEditor(), 50)});
 
         function initQuillEditor() {
             const element = document.getElementById('{{ $quillId }}');
+
             if (!element || element.querySelector('.ql-editor')) {
+                console.warn('Quill já iniciado ou elemento não encontrado');
                 return;
             }
 
@@ -29,25 +29,30 @@
             });
 
             const initialContent = @json($content);
-            if (initialContent) {
+            if (initialContent && initialContent.length > 0) {
                 quill.root.innerHTML = initialContent;
             }
 
-            // Atualiza Livewire
             let timeout;
             quill.on('text-change', function (delta, oldDelta, source) {
                 if (source === 'user') {
                     clearTimeout(timeout);
                     timeout = setTimeout(() => {
-                    @this.set('{{ $modelName }}', quill.root.innerHTML);
+                        window.Livewire.dispatch('quillUpdated', {
+                            content: quill.root.innerHTML
+                        });
                     }, 300);
                 }
             });
+
+            window.addEventListener('refresh-quill-{{ $quillId }}', e => {
+                quill.root.innerHTML = e.detail?.content || '';
+            });
+
             window.addEventListener('clear-quill-{{ $quillId }}', () => quill.setText(''));
             window.addEventListener('toggle-quill-{{ $quillId }}', e => quill.enable(!e.detail.disabled));
             window.addEventListener('focus-quill-{{ $quillId }}', () => quill.focus());
             window.addEventListener('select-all-quill-{{ $quillId }}', () => quill.setSelection(0, quill.getLength()));
         }
     </script>
-
 @endpush
