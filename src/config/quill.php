@@ -71,7 +71,7 @@ return [
                 ['direction' => 'rtl'],
                 ['align' => []],
             ],
-            ['link', 'image', 'video'],
+            ['link'],
             ['clean'],
         ],
 
@@ -81,9 +81,6 @@ return [
             'maxStack' => 500,
             'userOnly' => true,
         ],
-
-        // Permite redimensionamento de imagens (requer quill-image-resize-module)
-        'imageResize' => true,
 
         // Configurações do clipboard
         'clipboard' => [
@@ -104,9 +101,7 @@ return [
         'color', 'background',
         'script',
         'blockquote', 'code-block',
-        'list', 'bullet', 'indent',
         'direction', 'align',
         'link', 'image', 'video',
-        'clean',
     ],
 ];
