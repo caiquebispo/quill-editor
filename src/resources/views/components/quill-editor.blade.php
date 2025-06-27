@@ -9,9 +9,11 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('livewire:navigated', () => initQuillEditor());
+        // document.addEventListener('DOMContentLoaded', () => initQuillEditor());
+
+        function initQuillEditor() {
             const element = document.getElementById('{{ $quillId }}');
-            if (!element || element.classList.contains('ql-container')) return;
 
             const quill = new Quill('#{{ $quillId }}', {
                 theme: '{{ $config['theme'] }}',
@@ -21,15 +23,20 @@
                 formats: @json($config['formats']),
             });
 
-            @if($content)
-                quill.root.innerHTML = @json($content);
-            @endif
+            const initialContent = @json($content);
+            if (initialContent && initialContent.length > 0) {
+                quill.root.innerHTML = initialContent;
+            }
 
-            quill.on('text-change', function(delta, oldDelta, source) {
+            let timeout;
+            quill.on('text-change', function (delta, oldDelta, source) {
                 if (source === 'user') {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => {
                     @this.set('{{ $modelName }}', quill.root.innerHTML);
+                    }, 300);
                 }
-            });
+            })
 
             window.addEventListener('refresh-quill-{{ $quillId }}', e => {
                 quill.root.innerHTML = e.detail?.content || '';
@@ -39,6 +46,7 @@
             window.addEventListener('toggle-quill-{{ $quillId }}', e => quill.enable(!e.detail.disabled));
             window.addEventListener('focus-quill-{{ $quillId }}', () => quill.focus());
             window.addEventListener('select-all-quill-{{ $quillId }}', () => quill.setSelection(0, quill.getLength()));
-        });
+        }
     </script>
+
 @endpush
