@@ -1,0 +1,37 @@
+{
+    "name": "caiquebispo/quill-editor",
+    "description": "A Quill Editor component for Laravel Livewire.",
+    "keywords": [
+        "laravel",
+        "livewire",
+        "quill",
+        "editor",
+        "wysiwyg",
+        "rich-text-editor"
+    ],
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "CaiqueBispo\\QuillEditor\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Caique Bispo",
+            "email": "caiquebispo0023@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "livewire/livewire": "^3.6"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+               "CaiqueBispo\\QuillEditor\\Provider\\QuillEditorServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
