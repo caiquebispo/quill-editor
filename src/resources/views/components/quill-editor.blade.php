@@ -9,11 +9,16 @@
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.min.js"></script>
     <script>
-        // document.addEventListener('livewire:navigated', () => initQuillEditor());
-        // document.addEventListener('DOMContentLoaded', () => initQuillEditor());
+
+        document.addEventListener('livewire:navigated', () => initQuillEditor());
+        document.addEventListener('DOMContentLoaded', () => initQuillEditor());
+        document.addEventListener('open-editor-modal', () => { setTimeout(() => initQuillEditor(), 50)});
 
         function initQuillEditor() {
             const element = document.getElementById('{{ $quillId }}');
+            if (!element || element.querySelector('.ql-editor')) {
+                return;
+            }
 
             const quill = new Quill('#{{ $quillId }}', {
                 theme: '{{ $config['theme'] }}',
@@ -24,10 +29,11 @@
             });
 
             const initialContent = @json($content);
-            if (initialContent && initialContent.length > 0) {
+            if (initialContent) {
                 quill.root.innerHTML = initialContent;
             }
 
+            // Atualiza Livewire
             let timeout;
             quill.on('text-change', function (delta, oldDelta, source) {
                 if (source === 'user') {
@@ -36,19 +42,7 @@
                     @this.set('{{ $modelName }}', quill.root.innerHTML);
                     }, 300);
                 }
-            })
-
-            window.addEventListener('refresh-quill-{{ $quillId }}', e => {
-                quill.root.innerHTML = e.detail?.content || '';
             });
-
-            // document.addEventListener('DOMContentLoaded', initQuillEditor);
-
-            if (window.Livewire) {
-                Livewire.hook('element.updated', (el, component) => {
-                    initQuillEditor();
-                });
-            }
             window.addEventListener('clear-quill-{{ $quillId }}', () => quill.setText(''));
             window.addEventListener('toggle-quill-{{ $quillId }}', e => quill.enable(!e.detail.disabled));
             window.addEventListener('focus-quill-{{ $quillId }}', () => quill.focus());
