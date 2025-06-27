@@ -44,11 +44,9 @@
                     }, 300);
                 }
             });
-
             window.addEventListener('refresh-quill-{{ $quillId }}', e => {
                 quill.root.innerHTML = e.detail?.content || '';
             });
-
             window.addEventListener('clear-quill-{{ $quillId }}', () => quill.setText(''));
             window.addEventListener('toggle-quill-{{ $quillId }}', e => quill.enable(!e.detail.disabled));
             window.addEventListener('focus-quill-{{ $quillId }}', () => quill.focus());
