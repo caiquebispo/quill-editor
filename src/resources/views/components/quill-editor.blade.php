@@ -42,6 +42,13 @@
                 quill.root.innerHTML = e.detail?.content || '';
             });
 
+            document.addEventListener('DOMContentLoaded', initQuillEditor);
+
+            if (window.Livewire) {
+                Livewire.hook('element.updated', (el, component) => {
+                    initQuillEditor();
+                });
+            }
             window.addEventListener('clear-quill-{{ $quillId }}', () => quill.setText(''));
             window.addEventListener('toggle-quill-{{ $quillId }}', e => quill.enable(!e.detail.disabled));
             window.addEventListener('focus-quill-{{ $quillId }}', () => quill.focus());
