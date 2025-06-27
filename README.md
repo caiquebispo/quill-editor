@@ -15,6 +15,18 @@ Supports editing with headings, bold, italic, lists, links, images, videos, alig
 ```bash
 composer require caiquebispo/quill-editor
 ```
+
+In your main layout file (for example, `resources/views/layouts/app.blade.php`), include:
+```
+<head>
+    ...
+    @stack('styles')
+</head>
+<body>
+    ...
+    @stack('scripts')
+</body>
+```
 ---
 ## Publishing assets and configuration
 
