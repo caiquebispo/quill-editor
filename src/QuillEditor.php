@@ -36,6 +36,8 @@ class QuillEditor extends Component
     public function updatedContent(string $value): void
     {
         $this->dispatch('quillUpdated', content: $value, editorId: $this->quillId);
+
+        $this->skipRender = false;
     }
     #[On('refreshEditor')]
     public function refreshEditor(?string $targetId = null): void
@@ -94,16 +96,18 @@ class QuillEditor extends Component
     {
         $this->dispatch("update-content-quill-{$this->quillId}", content: $this->content);
     }
+    public function reinitializeEditor(): void
+    {
+        $this->dispatch("reinitialize-quill-{$this->quillId}");
+    }
     public function getEditorConfigProperty(): string
     {
         return json_encode($this->config);
     }
-
     public function render(): View
     {
         return view('quill-editor::components.quill-editor');
     }
-
     private function deepMerge(array $base, array $override): array
     {
         foreach ($override as $key => $value) {

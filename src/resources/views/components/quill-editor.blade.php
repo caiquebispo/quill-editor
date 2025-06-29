@@ -25,7 +25,9 @@
 
                 if (window.quillInstances[editorId]) {
                     try {
-                        window.quillInstances[editorId].destroy?.();
+                        if (typeof window.quillInstances[editorId].destroy === 'function') {
+                            window.quillInstances[editorId].destroy();
+                        }
                     } catch (e) {
                         console.warn('Erro ao destruir instância anterior:', e);
                     }
@@ -40,6 +42,7 @@
 
                     window.quillInstances[editorId] = quill;
 
+
                     if (initialContent && initialContent.trim().length > 0) {
 
                         setTimeout(() => {
@@ -51,15 +54,19 @@
                         }, 100);
                     }
 
+
                     let timeout;
                     quill.on('text-change', function (delta, oldDelta, source) {
                         if (source === 'user') {
                             clearTimeout(timeout);
                             timeout = setTimeout(() => {
 
-                                const component = window.Livewire.find(element.closest('[wire\\:id]')?.getAttribute('wire:id'));
-                                if (component) {
-                                    component.set('content', quill.root.innerHTML);
+                                const wireElement = element.closest('[wire\\:id]');
+                                if (wireElement && window.Livewire) {
+                                    const component = window.Livewire.find(wireElement.getAttribute('wire:id'));
+                                    if (component) {
+                                        component.set('content', quill.root.innerHTML);
+                                    }
                                 }
                             }, 300);
                         }
@@ -71,6 +78,7 @@
                     console.error(`Erro ao inicializar Quill ${editorId}:`, error);
                 }
             }
+
 
             document.addEventListener('livewire:navigated', () => {
 
@@ -85,12 +93,15 @@
                 });
             });
 
+
             document.addEventListener('livewire:before-dom-update', () => {
 
                 Object.keys(window.quillInstances || {}).forEach(editorId => {
                     if (!document.getElementById(editorId)) {
                         try {
-                            window.quillInstances[editorId]?.destroy?.();
+                            if (window.quillInstances[editorId] && typeof window.quillInstances[editorId].destroy === 'function') {
+                                window.quillInstances[editorId].destroy();
+                            }
                             delete window.quillInstances[editorId];
                             console.log(`Cleanup do editor ${editorId} realizado`);
                         } catch (e) {
@@ -106,17 +117,42 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            initializeQuillEditor{{ str_replace('-', '_', $quillId) }}();
+        });
+
+        document.addEventListener('livewire:morph-added', function(event) {
+            const editorElement = event.detail.el.querySelector('#{{ $quillId }}');
+            if (editorElement) {
+                console.log('Re-inicializando editor após morph: {{ $quillId }}');
+                setTimeout(() => {
+                    initializeQuillEditor{{ str_replace('-', '_', $quillId) }}();
+                }, 100);
+            }
+        });
+
+        document.addEventListener('livewire:update', function() {
+            const element = document.getElementById('{{ $quillId }}');
+            if (element && !element.querySelector('.ql-editor')) {
+                console.log('Re-inicializando editor após update: {{ $quillId }}');
+                setTimeout(() => {
+                    initializeQuillEditor{{ str_replace('-', '_', $quillId) }}();
+                }, 150);
+            }
+        });
+
+        function initializeQuillEditor{{ str_replace('-', '_', $quillId) }}() {
 
             const editorConfig = {
                 theme: '{{ $config['theme'] ?? 'snow' }}',
                 placeholder: '{{ $config['placeholder'] ?? 'Digite aqui...' }}',
                 readOnly: {{ ($config['readOnly'] ?? false) ? 'true' : 'false' }},
                 modules: @json($config['modules'] ?? []),
-                formats: @json($config['formats'] ?? []),
+                formats: @json($config['formats'] ?? [])
             };
 
             const editorId = '{{ $quillId }}';
-            const initialContent = @json($content);
+            const initialContent = @json($content ?? '');
+
 
             const element = document.getElementById(editorId);
             if (element) {
@@ -126,6 +162,7 @@
 
             initSpecificQuillEditor(editorId, editorConfig, initialContent);
 
+            // Event listeners específicos para esta instância
             window.addEventListener('refresh-quill-{{ $quillId }}', function(e) {
                 const quill = window.quillInstances['{{ $quillId }}'];
                 if (quill) {
@@ -177,6 +214,6 @@
                     quill.setSelection(0, quill.getLength());
                 }
             });
-        });
+        }
     </script>
 @endpush
