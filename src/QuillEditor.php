@@ -10,66 +10,73 @@ use Livewire\Component;
 class QuillEditor extends Component
 {
     public string $content = '';
-
     public string $quillId;
-
     public array $config = [];
-
     public string $modelName = 'content';
+    public bool $initialized = false;
 
     public function mount(
         string $content = '',
         array  $config = [],
-        string $modelName = 'content'
+        string $modelName = 'content',
+        ?string $quillId = null
     ): void {
-        $this->content    = $content;
-        $this->modelName  = $modelName;
-        $this->quillId    = 'quill-editor-' . Str::uuid()->toString();
+        $this->content = $content;
+        $this->modelName = $modelName;
+
+        $this->quillId = $quillId ?? 'quill-editor-' . uniqid() . '-' . Str::random(8);
 
         $defaultConfig = config('quill', []);
-
         $this->config = $this->deepMerge($defaultConfig, $config);
+    }
+    public function hydrate(): void
+    {
+        $this->initialized = false;
     }
     public function updatedContent(string $value): void
     {
-        $this->dispatch('quillUpdated', content: $value);
+        $this->dispatch('quillUpdated', content: $value, editorId: $this->quillId);
     }
-
     #[On('refreshEditor')]
-    public function refreshEditor(): void
+    public function refreshEditor(?string $targetId = null): void
     {
-        $this->dispatch("refresh-quill-{$this->quillId}", content: $this->content);
+        if ($targetId === null || $targetId === $this->quillId) {
+            $this->dispatch("refresh-quill-{$this->quillId}", content: $this->content);
+        }
     }
-
     #[On('clearEditor')]
-    public function clearEditor(): void
+    public function clearEditor(?string $targetId = null): void
     {
-        $this->content = '';
-        $this->dispatch("clear-quill-{$this->quillId}");
+        if ($targetId === null || $targetId === $this->quillId) {
+            $this->content = '';
+            $this->dispatch("clear-quill-{$this->quillId}");
+        }
     }
-
     public function setContent(string $content): void
     {
         $this->content = $content;
         $this->refreshEditor();
     }
-
     #[On('toggleEditor')]
-    public function toggleEditor(bool $disabled = false): void
+    public function toggleEditor(bool $disabled = false, ?string $targetId = null): void
     {
-        $this->dispatch("toggle-quill-{$this->quillId}", disabled: $disabled);
+        if ($targetId === null || $targetId === $this->quillId) {
+            $this->dispatch("toggle-quill-{$this->quillId}", disabled: $disabled);
+        }
     }
-
     #[On('focusEditor')]
-    public function focusEditor(): void
+    public function focusEditor(?string $targetId = null): void
     {
-        $this->dispatch("focus-quill-{$this->quillId}");
+        if ($targetId === null || $targetId === $this->quillId) {
+            $this->dispatch("focus-quill-{$this->quillId}");
+        }
     }
-
     #[On('selectAllEditor')]
-    public function selectAllEditor(): void
+    public function selectAllEditor(?string $targetId = null): void
     {
-        $this->dispatch("select-all-quill-{$this->quillId}");
+        if ($targetId === null || $targetId === $this->quillId) {
+            $this->dispatch("select-all-quill-{$this->quillId}");
+        }
     }
     public function getPlainText(): string
     {
@@ -83,11 +90,20 @@ class QuillEditor extends Component
     {
         return $this->getPlainText() === '';
     }
+    public function updateEditorContent(): void
+    {
+        $this->dispatch("update-content-quill-{$this->quillId}", content: $this->content);
+    }
+    public function getEditorConfigProperty(): string
+    {
+        return json_encode($this->config);
+    }
 
     public function render(): View
     {
         return view('quill-editor::components.quill-editor');
     }
+
     private function deepMerge(array $base, array $override): array
     {
         foreach ($override as $key => $value) {
