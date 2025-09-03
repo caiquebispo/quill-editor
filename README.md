@@ -3,11 +3,15 @@
 Livewire 3 component for rich text editing powered by [Quill.js](https://quilljs.com/).  
 Supports editing with headings, bold, italic, lists, links, images, videos, alignment, colors, and more, fully integrated with Laravel and Livewire for seamless form and CMS workflows.
 
-**New Features:**
+**Features:**
 - ✅ **Multiple instances** support on the same page
 - ✅ **Pre-loaded content** from database for editing
 - ✅ **Improved event handling** for better reliability
 - ✅ **Enhanced cleanup** and memory management
+- ✅ **Fully responsive** design with mobile-specific configurations
+- ✅ **Dynamic configuration** via array with support for all Quill.js options
+- ✅ **Mobile-optimized** toolbar and interface
+- ✅ **Customizable publishing** of configuration
 
 ---
 
@@ -41,12 +45,45 @@ In your main layout file (for example, `resources/views/layouts/app.blade.php`),
 For publishing the configuration and assets, run the following commands:
 
 ```bash
-php artisan vendor:publish --provider="CaiqueBispo\QuillEditor\QuillEditorServiceProvider" --tag=config
+php artisan vendor:publish --provider="CaiqueBispo\QuillEditor\Provider\QuillEditorServiceProvider" --tag=config
 
-php artisan vendor:publish --provider="CaiqueBispo\QuillEditor\QuillEditorServiceProvider" --tag=assets
+php artisan vendor:publish --provider="CaiqueBispo\QuillEditor\Provider\QuillEditorServiceProvider" --tag=assets
 ```
 
 This will create the `config/quill.php` file and copy the necessary assets to your public directory.
+
+### Configuration Options
+
+The published configuration file (`config/quill.php`) includes the following options:
+
+```php
+return [
+    // Theme: 'snow' or 'bubble'
+    'theme' => 'snow',
+    
+    // Placeholder text
+    'placeholder' => 'Digite seu texto aqui...',
+    
+    // Editor dimensions
+    'height' => '300px',
+    'width' => '100%',
+    
+    // Read-only mode
+    'readOnly' => false,
+    
+    // Mobile-specific configurations
+    'mobile' => [
+        'simplifyToolbar' => true,
+        'height' => '200px',
+    ],
+    
+    // Quill.js modules configuration
+    'modules' => [...],
+    
+    // Allowed formats
+    'formats' => [...],
+];
+```
 
 ---
 
@@ -58,6 +95,65 @@ Create a Livewire component to use the Quill editor:
 
 ```bash
 php artisan make:livewire EditorComponent
+```
+
+### Advanced Usage
+
+#### Dynamic Configuration
+
+You can pass configuration options directly to the component:
+
+```php
+<livewire:quill-editor 
+    :content="$meuConteudo" 
+    :config="[
+        'theme' => 'bubble',
+        'height' => '400px',
+        'placeholder' => 'Escreva aqui...',
+        'modules' => [
+            'toolbar' => [
+                ['bold', 'italic', 'underline'],
+                ['link', 'image'],
+            ]
+        ]
+    ]" 
+/>
+```
+
+#### Individual Configuration Parameters
+
+You can also pass individual configuration parameters:
+
+```php
+<livewire:quill-editor 
+    :content="$meuConteudo" 
+    :theme="'bubble'" 
+    :height="'400px'" 
+    :placeholder="'Escreva aqui...'" 
+    :read-only="false" 
+/>
+```
+
+#### Mobile-Specific Configuration
+
+The component supports mobile-specific configurations:
+
+```php
+<livewire:quill-editor 
+    :content="$meuConteudo" 
+    :config="[
+        'theme' => 'snow',
+        'height' => '400px',
+        'mobile' => [
+            'height' => '200px',
+            'simplifyToolbar' => true,
+            'toolbar' => [
+                ['bold', 'italic'],
+                ['link']
+            ]
+        ]
+    ]" 
+/>
 ```
 
 #### 📁 `app/Livewire/EditorComponent.php`
