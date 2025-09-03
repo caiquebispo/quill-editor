@@ -24,15 +24,37 @@ return [
     | Altura do editor
     |--------------------------------------------------------------------------
     | Este valor será aplicado diretamente no estilo do container
+    | Pode ser em px, %, vh, etc.
     */
-    'height' => '300px',
+    'height' => '200px',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Largura do editor
+    |--------------------------------------------------------------------------
+    | Por padrão o editor é 100% responsivo, mas você pode definir uma largura fixa
+    | Pode ser em px, %, vw, etc.
+    */
+    'width' => '100%',
 
     /*
     |--------------------------------------------------------------------------
     | Modo somente leitura
     |--------------------------------------------------------------------------
+    | Define se o editor permite edição ou apenas visualização
     */
     'readOnly' => false,
+    
+    /*
+    |--------------------------------------------------------------------------
+    | Configurações para dispositivos móveis
+    |--------------------------------------------------------------------------
+    | Configurações específicas para quando o editor é visualizado em dispositivos móveis
+    */
+    'mobile' => [
+        'simplifyToolbar' => true, // Simplifica a barra de ferramentas em dispositivos móveis
+        'height' => '200px',        // Altura específica para dispositivos móveis
+    ],
 
     /*
     |--------------------------------------------------------------------------
@@ -101,6 +123,8 @@ return [
         'color', 'background',
         'script',
         'blockquote', 'code-block',
+        'list', 'bullet', 'ordered',
+        'indent',
         'direction', 'align',
         'link', 'image', 'video',
     ],

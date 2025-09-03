@@ -15,11 +15,11 @@ class QuillEditorServiceProvider extends ServiceProvider
 
         $this->publishes([
             __DIR__ . '/../config/quill.php' => config_path('quill.php'),
-        ], 'config');
+        ], 'config', true);
 
         $this->publishes([
             __DIR__.'/../resources/js' => public_path('vendor/quill-editor'),
-        ], 'assets');
+        ], 'assets', true);
 
         Livewire::component('quill-editor', QuillEditor::class);
     }

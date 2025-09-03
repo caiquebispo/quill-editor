@@ -19,7 +19,13 @@ class QuillEditor extends Component
         string $content = '',
         array  $config = [],
         string $modelName = 'content',
-        ?string $quillId = null
+        ?string $quillId = null,
+        ?array $modules = null,
+        ?array $formats = null,
+        ?string $theme = null,
+        ?string $placeholder = null,
+        ?string $height = null,
+        ?bool $readOnly = null
     ): void {
         $this->content = $content;
         $this->modelName = $modelName;
@@ -27,7 +33,36 @@ class QuillEditor extends Component
         $this->quillId = $quillId ?? 'quill-editor-' . uniqid() . '-' . Str::random(8);
 
         $defaultConfig = config('quill', []);
-        $this->config = $this->deepMerge($defaultConfig, $config);
+        
+        // Merge user config with default config
+        $mergedConfig = $this->deepMerge($defaultConfig, $config);
+        
+        // Apply individual parameter overrides if provided
+        if ($modules !== null) {
+            $mergedConfig['modules'] = $this->deepMerge($mergedConfig['modules'] ?? [], $modules);
+        }
+        
+        if ($formats !== null) {
+            $mergedConfig['formats'] = array_unique(array_merge($mergedConfig['formats'] ?? [], $formats));
+        }
+        
+        if ($theme !== null) {
+            $mergedConfig['theme'] = $theme;
+        }
+        
+        if ($placeholder !== null) {
+            $mergedConfig['placeholder'] = $placeholder;
+        }
+        
+        if ($height !== null) {
+            $mergedConfig['height'] = $height;
+        }
+        
+        if ($readOnly !== null) {
+            $mergedConfig['readOnly'] = $readOnly;
+        }
+        
+        $this->config = $mergedConfig;
     }
     public function hydrate(): void
     {

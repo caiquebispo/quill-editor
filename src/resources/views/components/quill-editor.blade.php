@@ -1,6 +1,37 @@
-<div wire:ignore>
-    <div id="{{ $quillId }}" style="height: {{ $config['height'] ?? '200px' }};"></div>
-</div>
+<div>
+    <div wire:ignore class="quill-editor-container">
+        <div id="{{ $quillId }}" class="quill-editor" style="height: {{ $config['height'] ?? '200px' }}; width: {{ $config['width'] ?? '100%' }};"></div>
+    </div>
+
+    <style>
+        .quill-editor-container {
+            width: 100%;
+            max-width: {{ $config['width'] ?? '100%' }};
+        }
+        .quill-editor {
+            width: 100%;
+        }
+        .ql-container {
+            font-size: 16px;
+        }
+        .ql-editor {
+            color: #333333 !important;
+        }
+        .ql-editor p, .ql-editor span, .ql-editor div, .ql-editor * {
+            color: #333333 !important;
+        }
+        @media (max-width: 768px) {
+            .quill-editor-container .quill-editor {
+                height: {{ $config['mobile']['height'] ?? $config['height'] ?? '200px' }} !important;
+            }
+            .ql-toolbar button {
+                padding: 3px 5px;
+            }
+            .ql-container {
+                font-size: 14px;
+            }
+        }
+    </style>
 
 @once
     @push('styles')
@@ -14,6 +45,60 @@
         <script>
 
             window.quillInstances = window.quillInstances || {};
+            
+            // Função para processar configurações avançadas do Quill
+            function processQuillConfig(config) {
+                // Clone para não modificar o objeto original
+                const processedConfig = JSON.parse(JSON.stringify(config));
+                
+                // Garantir que as configurações básicas existam
+                processedConfig.theme = processedConfig.theme || 'snow';
+                processedConfig.placeholder = processedConfig.placeholder || 'Digite aqui...';
+                processedConfig.modules = processedConfig.modules || {};
+                processedConfig.formats = processedConfig.formats || [];
+                
+                // Configurações responsivas
+                const isMobile = window.innerWidth < 768;
+                if (isMobile && processedConfig.mobile) {
+                    // Aplicar configurações específicas para dispositivos móveis
+                    if (processedConfig.mobile.simplifyToolbar !== false) {
+                        // Simplificar a barra de ferramentas em dispositivos móveis
+                        if (processedConfig.modules.toolbar && Array.isArray(processedConfig.modules.toolbar)) {
+                            // Manter apenas as ferramentas essenciais em dispositivos móveis
+                            const essentialTools = [
+                                ['bold', 'italic', 'underline'],
+                                [{ 'header': 1 }, { 'header': 2 }],
+                                ['link']
+                            ];
+                            
+                            // Verificar se o usuário definiu uma barra de ferramentas móvel específica
+                            if (processedConfig.mobile.toolbar) {
+                                processedConfig.modules.toolbar = processedConfig.mobile.toolbar;
+                            } else if (processedConfig.mobileToolbar) {
+                                processedConfig.modules.toolbar = processedConfig.mobileToolbar;
+                                delete processedConfig.mobileToolbar;
+                            } else {
+                                processedConfig.modules.toolbar = essentialTools;
+                            }
+                        }
+                    }
+                    
+                    // Aplicar outras configurações móveis se existirem
+                    if (processedConfig.mobile.theme) {
+                        processedConfig.theme = processedConfig.mobile.theme;
+                    }
+                    
+                    if (processedConfig.mobile.placeholder) {
+                        processedConfig.placeholder = processedConfig.mobile.placeholder;
+                    }
+                }
+                
+                // Remover configurações móveis do objeto principal para não interferir na inicialização do Quill
+                delete processedConfig.mobile;
+                delete processedConfig.mobileToolbar;
+                
+                return processedConfig;
+            }
 
             function initSpecificQuillEditor(editorId, config, initialContent) {
                 const element = document.getElementById(editorId);
@@ -37,14 +122,21 @@
                 element.innerHTML = '';
 
                 try {
-
-                    const quill = new Quill(`#${editorId}`, config);
+                    // Processando configurações avançadas
+                    const processedConfig = processQuillConfig(config);
+                    
+                    // Garantir que os formatos de lista estejam incluídos
+                    if (!processedConfig.formats || !processedConfig.formats.includes('list')) {
+                        processedConfig.formats = [...(processedConfig.formats || []), 'list', 'bullet', 'ordered'];
+                    }
+                    
+                    // Inicializando o editor com as configurações processadas
+                    const quill = new Quill(`#${editorId}`, processedConfig);
 
                     window.quillInstances[editorId] = quill;
 
-
+                    // Aplicando conteúdo inicial
                     if (initialContent && initialContent.trim().length > 0) {
-
                         setTimeout(() => {
                             if (initialContent.startsWith('<') || initialContent.includes('</')) {
                                 quill.root.innerHTML = initialContent;
@@ -91,6 +183,24 @@
                         initSpecificQuillEditor(editorId, config, content);
                     }
                 });
+            });
+            
+            // Adicionar evento de redimensionamento para responsividade
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    // Reinicializar editores quando a janela for redimensionada
+                    // para aplicar configurações responsivas
+                    Object.keys(window.quillInstances || {}).forEach(editorId => {
+                        const element = document.getElementById(editorId);
+                        if (element) {
+                            const config = element.dataset.quillConfig ? JSON.parse(element.dataset.quillConfig) : {};
+                            const content = window.quillInstances[editorId].root.innerHTML;
+                            initSpecificQuillEditor(editorId, config, content);
+                        }
+                    });
+                }, 300); // Debounce para evitar múltiplas reinicializações
             });
 
 
@@ -217,3 +327,4 @@
         }
     </script>
 @endpush
+</div>
