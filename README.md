@@ -1,3 +1,17 @@
+## Livewire Quill Editor - Notes
+
+Fixes included:
+- Idempotent initialization to prevent duplicate toolbars when Livewire morphs/updates
+- Uses `wire:ignore.self` to scope DOM changes
+- Responsive/mobile config processing with optional simplified toolbar
+
+Basic usage:
+```blade
+<x-quill-editor :config="[
+  'height' => '240px',
+  'modules' => ['toolbar' => [['bold','italic','underline'], [{'header':1},{'header':2}], ['link']]],
+]" />
+```
 # Quill Editor Livewire Component
 
 Livewire 3 component for rich text editing powered by [Quill.js](https://quilljs.com/).  
