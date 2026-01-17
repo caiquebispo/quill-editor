@@ -1,5 +1,13 @@
 ## Livewire Quill Editor - Notes
 
+<p align="center">
+  <a href="https://packagist.org/packages/caiquebispo/quill-editor"><img src="http://poser.pugx.org/caiquebispo/quill-editor/v" alt="Latest Stable Version"></a>
+  <a href="https://packagist.org/packages/caiquebispo/quill-editor"><img src="http://poser.pugx.org/caiquebispo/quill-editor/downloads" alt="Total Downloads"></a>
+  <a href="https://packagist.org/packages/caiquebispo/quill-editor"><img src="http://poser.pugx.org/caiquebispo/quill-editor/v/unstable" alt="Latest Unstable Version"></a>
+  <a href="https://packagist.org/packages/caiquebispo/quill-editor"><img src="http://poser.pugx.org/caiquebispo/quill-editor/license" alt="License"></a>
+  <a href="https://packagist.org/packages/caiquebispo/quill-editor"><img src="http://poser.pugx.org/caiquebispo/quill-editor/require/php" alt="PHP Version Require"></a>
+</p>
+
 Fixes included:
 - Idempotent initialization to prevent duplicate toolbars when Livewire morphs/updates
 - Uses `wire:ignore.self` to scope DOM changes
