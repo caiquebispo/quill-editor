@@ -44,7 +44,53 @@ return [
     | Define se o editor permite edição ou apenas visualização
     */
     'readOnly' => false,
-    
+
+    /*
+    |--------------------------------------------------------------------------
+    | Contador de Caracteres
+    |--------------------------------------------------------------------------
+    | Configurações para exibir contador de caracteres
+    */
+    'showCharacterCount' => false,  // Mostrar contador de caracteres
+    'characterLimit' => null,       // null = sem limite, número = limite máximo
+
+    /*
+    |--------------------------------------------------------------------------
+    | Auto-save
+    |--------------------------------------------------------------------------
+    | Salvar automaticamente como draft em localStorage
+    */
+    'autoSave' => [
+        'enabled' => false,         // Habilitar auto-save
+        'interval' => 30000,        // Intervalo em ms (30 segundos)
+        'key' => null,              // null = usa quillId como key
+        'showIndicator' => true,    // Mostrar indicador de salvamento
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Full-screen Mode
+    |--------------------------------------------------------------------------
+    | Habilitar botão de tela cheia
+    */
+    'fullScreen' => [
+        'enabled' => false,         // Habilitar botão de tela cheia
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Image Upload
+    |--------------------------------------------------------------------------
+    | Configurações para upload de imagens
+    */
+    'imageUpload' => [
+        'enabled' => false,                                      // Habilitar upload de imagens
+        'maxSize' => 2048,                                       // Tamanho máximo em KB
+        'acceptedFormats' => ['jpeg', 'jpg', 'png', 'gif', 'webp'], // Formatos aceitos
+        'disk' => 'public',                                      // Disco de armazenamento
+        'path' => 'quill-images',                                // Pasta de destino
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Configurações para dispositivos móveis
@@ -93,7 +139,7 @@ return [
                 ['direction' => 'rtl'],
                 ['align' => []],
             ],
-            ['link'],
+            ['link', 'image'],
             ['clean'],
         ],
 
