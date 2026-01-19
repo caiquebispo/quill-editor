@@ -25,7 +25,7 @@ Basic usage:
 Livewire component for rich text editing powered by [Quill.js](https://quilljs.com/).  
 Supports editing with headings, bold, italic, lists, links, images, videos, alignment, colors, and more, fully integrated with Laravel and Livewire for seamless form and CMS workflows.
 
-**Features:**
+**Core Features:**
 - ✅ **Multiple instances** support on the same page
 - ✅ **Pre-loaded content** from database for editing
 - ✅ **Improved event handling** for better reliability
@@ -34,6 +34,13 @@ Supports editing with headings, bold, italic, lists, links, images, videos, alig
 - ✅ **Dynamic configuration** via array with support for all Quill.js options
 - ✅ **Mobile-optimized** toolbar and interface
 - ✅ **Customizable publishing** of configuration
+
+**New Features (v1.2+):**
+- 📊 **Character Counter** - Real-time character counting with optional limit
+- 💾 **Auto-save** - Automatic draft saving to localStorage
+- ⛶ **Full-screen Mode** - Expand editor to full screen (ESC to exit)
+- 🖼️ **Image Upload** - Upload images directly from editor with Livewire
+- 📐 **Image Resize** - Resize images with drag handles and preset buttons
 
 ---
 
@@ -105,6 +112,159 @@ return [
     // Allowed formats
     'formats' => [...],
 ];
+```
+
+---
+
+## New Features Configuration
+
+### 📊 Character Counter
+
+Display a real-time character count with optional limit:
+
+```blade
+<livewire:quill-editor 
+    :content="$content" 
+    :config="[
+        'showCharacterCount' => true,  // Enable counter
+        'characterLimit' => 500,       // Optional: set max characters (null = no limit)
+    ]" 
+/>
+```
+
+When the limit is exceeded, the counter turns red to alert the user.
+
+---
+
+### 💾 Auto-save (Draft)
+
+Automatically save content to localStorage at regular intervals:
+
+```blade
+<livewire:quill-editor 
+    :content="$content" 
+    :config="[
+        'autoSave' => [
+            'enabled' => true,           // Enable auto-save
+            'interval' => 30000,         // Save every 30 seconds (in ms)
+            'showIndicator' => true,     // Show "Saved" indicator
+            'key' => 'my-custom-key',    // Optional: custom localStorage key
+        ],
+    ]" 
+/>
+```
+
+**Programmatic Draft Control:**
+```php
+// In your Livewire component
+public function restoreDraft(): void
+{
+    $this->dispatch('restoreDraft');
+}
+
+public function clearDraft(): void
+{
+    $this->dispatch('clearDraft');
+}
+```
+
+---
+
+### ⛶ Full-screen Mode
+
+Enable a full-screen button to expand the editor:
+
+```blade
+<livewire:quill-editor 
+    :content="$content" 
+    :config="[
+        'fullScreen' => [
+            'enabled' => true,
+        ],
+    ]" 
+/>
+```
+
+- Click the **⛶** button (top-right) to enter full-screen
+- Press **ESC** to exit full-screen mode
+
+---
+
+### 🖼️ Image Upload
+
+Enable direct image uploads with Livewire file handling:
+
+```blade
+<livewire:quill-editor 
+    :content="$content" 
+    :config="[
+        'imageUpload' => [
+            'enabled' => true,
+            'maxSize' => 2048,                                    // Max size in KB (2MB)
+            'acceptedFormats' => ['jpeg', 'jpg', 'png', 'gif', 'webp'],
+            'disk' => 'public',                                   // Storage disk
+            'path' => 'quill-images',                             // Storage path
+        ],
+    ]" 
+/>
+```
+
+**Requirements:**
+1. Run `php artisan storage:link` to create the public storage symlink
+2. Ensure your storage disk is properly configured
+
+**How it works:**
+1. Click the image button 🖼️ in the toolbar
+2. Select an image from your computer
+3. The image is uploaded via Livewire and inserted into the editor
+
+---
+
+### 📐 Image Resize
+
+When Image Upload is enabled, images can be resized interactively:
+
+**How to use:**
+1. Click on any image in the editor to select it
+2. Use the **corner handles** to drag and resize (maintains aspect ratio)
+3. Use the **preset buttons** (25%, 50%, 75%, 100%) for quick sizing
+4. Click outside the image to deselect
+
+---
+
+### Complete Example (All Features)
+
+```blade
+<livewire:quill-editor 
+    :content="$content" 
+    :config="[
+        'height' => '400px',
+        'placeholder' => 'Start writing...',
+        
+        // Character Counter
+        'showCharacterCount' => true,
+        'characterLimit' => 1000,
+        
+        // Auto-save
+        'autoSave' => [
+            'enabled' => true,
+            'interval' => 15000,
+            'showIndicator' => true,
+        ],
+        
+        // Full-screen
+        'fullScreen' => [
+            'enabled' => true,
+        ],
+        
+        // Image Upload + Resize
+        'imageUpload' => [
+            'enabled' => true,
+            'maxSize' => 2048,
+            'acceptedFormats' => ['jpeg', 'jpg', 'png', 'gif', 'webp'],
+        ],
+    ]" 
+/>
 ```
 
 ---
