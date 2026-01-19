@@ -22,7 +22,7 @@ Basic usage:
 ```
 # Quill Editor Livewire Component
 
-Livewire 3 component for rich text editing powered by [Quill.js](https://quilljs.com/).  
+Livewire component for rich text editing powered by [Quill.js](https://quilljs.com/).  
 Supports editing with headings, bold, italic, lists, links, images, videos, alignment, colors, and more, fully integrated with Laravel and Livewire for seamless form and CMS workflows.
 
 **Features:**
@@ -40,7 +40,7 @@ Supports editing with headings, bold, italic, lists, links, images, videos, alig
 ## Requirements
 
 - PHP >=8.2
-- Livewire >= 3
+- Livewire >= ^3.5.0|^4.0.0
 
 ## Installation
 
